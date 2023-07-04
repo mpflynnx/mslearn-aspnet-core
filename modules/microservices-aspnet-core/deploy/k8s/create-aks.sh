@@ -1,6 +1,8 @@
 #!/bin/bash
 # Change this for a different VM size
-vmSize=Standard_D2_v5
+# vmSize=Standard_D2_v5
+# mf updates to fix exceeding core quota
+vmSize=Standard_B4ms
 
 # Color theming
 . <(cat ../../../../infrastructure/scripts/theme.sh)
