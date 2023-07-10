@@ -12,16 +12,28 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-// Add the using statements
+using Polly;
+using Polly.Extensions.Http;
+using System.Net.Http;
 
 namespace Microsoft.eShopOnContainers.Web.Shopping.HttpAggregator.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        // Add the GetRetryPolicy method
-
-        // Add the GetCircuitBreakerPolicy method
-
+        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions.HandleTransientHttpError()
+                .WaitAndRetryAsync(5,
+                    retryAttempt => TimeSpan.FromMilliseconds(Math.Pow(1.5, retryAttempt) * 1000),
+                    (_, waitingTime) =>
+                    {
+                        Log.Logger.Information(
+                            "----- Retrying in {WaitingTime}s", $"{waitingTime.TotalSeconds:n1}");
+                    });
+        }
+        public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>
+            HttpPolicyExtensions.HandleTransientHttpError()
+                .CircuitBreakerAsync(15, TimeSpan.FromSeconds(15));
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             //register delegating handlers
@@ -30,7 +42,9 @@ namespace Microsoft.eShopOnContainers.Web.Shopping.HttpAggregator.Extensions
 
             //register HTTP services
             services.AddHttpClient<ICouponService, CouponService>()
-                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+                .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
+                .AddPolicyHandler(GetRetryPolicy())
+                .AddPolicyHandler(GetCircuitBreakerPolicy());
 
             services.AddHttpClient<IBasketService, BasketService>()
                 .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
@@ -44,7 +58,7 @@ namespace Microsoft.eShopOnContainers.Web.Shopping.HttpAggregator.Extensions
                 .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
 
             return services;
-        }        
+        }
 
         public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
@@ -72,7 +86,7 @@ namespace Microsoft.eShopOnContainers.Web.Shopping.HttpAggregator.Extensions
             services.AddOptions();
             services.Configure<UrlsConfig>(configuration.GetSection("urls"));
             services.AddControllers()
-                    .AddNewtonsoftJson(options => 
+                    .AddNewtonsoftJson(options =>
                         options.SerializerSettings.Converters.Add(new StringEnumConverter()));
 
             services.AddSwaggerGen(options =>
@@ -107,7 +121,7 @@ namespace Microsoft.eShopOnContainers.Web.Shopping.HttpAggregator.Extensions
             services.AddSwaggerGenNewtonsoftSupport();
             services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy", builder => 
+                options.AddPolicy("CorsPolicy", builder =>
                     builder.SetIsOriginAllowed((host) => true)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
