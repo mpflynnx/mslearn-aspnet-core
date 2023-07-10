@@ -30,8 +30,14 @@ namespace Catalog.API.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        // Add AddAppInsights extension method
+        public static IServiceCollection AddAppInsights(
+            this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddApplicationInsightsTelemetry(configuration);
+            services.AddApplicationInsightsKubernetesEnricher();
 
+            return services;
+        }
         public static IServiceCollection AddCustomMVC(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers(options =>
@@ -105,8 +111,8 @@ namespace Catalog.API.Extensions
                                          sqlServerOptionsAction: sqlOptions =>
                                          {
                                              sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                            //Configuring Connection Resiliency: https://docs.microsoft.com/ef/core/miscellaneous/connection-resiliency 
-                                            sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                                             //Configuring Connection Resiliency: https://docs.microsoft.com/ef/core/miscellaneous/connection-resiliency 
+                                             sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                                          });
                 });
 
