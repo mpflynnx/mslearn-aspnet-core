@@ -6,6 +6,7 @@ metadata:
     app: eshop
     service: ordering
 data:
+  APPINSIGHTS_INSTRUMENTATIONKEY: 9bbfb0a2-8a31-4464-9fbb-f4d190909f2e
   ASPNETCORE_ENVIRONMENT: Development
   ASPNETCORE_URLS: http://0.0.0.0:80
   AzureServiceBusEnabled: "False"
