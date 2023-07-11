@@ -6,7 +6,7 @@ metadata:
     app: eshop
     service: webshoppingagg
 data:
-  APPINSIGHTS_INSTRUMENTATIONKEY: db35f36f-800c-4096-b6b9-48286728a437
+  APPINSIGHTS_INSTRUMENTATIONKEY: 312aa0b4-df63-49d3-b393-030a805aaa4e
   ASPNETCORE_ENVIRONMENT: Development
   ASPNETCORE_URLS: http://0.0.0.0:80
   BasketUrlHC: http://basket-api/hc

@@ -6,7 +6,7 @@ metadata:
     app: eshop
     service: catalog
 data:
-  APPINSIGHTS_INSTRUMENTATIONKEY: ad84ff83-58d2-449f-bd76-96b37250ead0
+  APPINSIGHTS_INSTRUMENTATIONKEY: 05d91e16-50cb-40ee-a164-8662fcdb92b9
   ASPNETCORE_ENVIRONMENT: Development
   AzureServiceBusEnabled: "False"
   AzureStorageEnabled: "False"
