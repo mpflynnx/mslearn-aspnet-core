@@ -1,0 +1,8 @@
+The eShop-Learn application has been deployed to "http://52.149.173.120" (IP: 52.149.173.120).
+
+You can begin exploring these services (when ready):
+- Centralized logging       : http://52.149.173.120/seq/#/events?autorefresh (See transient failures during startup)
+- General application status: http://52.149.173.120/webstatus/ (See overall service status)
+- Web SPA application       : http://52.149.173.120/
+
+
