@@ -5,7 +5,7 @@
 }
 @using WebSPA.ViewModels;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@* Add the addTagHelper directive *@
+@addTagHelper *, Microsoft.FeatureManagement.AspNetCore
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,11 +17,11 @@
     <link rel="stylesheet" href="~/assets/lib/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/assets/css/site.css" />
     <script>
-        function copyToClipboard(id) {                                    
+        function copyToClipboard(id) {
             var copyText = document.getElementById(id);
 
             var textArea = document.createElement("textarea");
-            textArea.value = copyText.textContent;            
+            textArea.value = copyText.textContent;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand("Copy");
@@ -31,6 +31,7 @@
         }
     </script>
 </head>
+
 <body>
     <header class="es-header">
         <div class="container">
@@ -45,7 +46,12 @@
     </header>
 
     <div class="container">
-        <partial name="_AvailableCoupons" model="allAvailableCoupons" />
+        <feature name="Coupons" negate="true">
+            <div class="feature-heading-text-display">You're not subscribed to this feature.</div>
+        </feature>
+        <feature name="Coupons">
+            <partial name="_AvailableCoupons" model="allAvailableCoupons" />
+        </feature>
     </div>
     <footer class="footer">
         <div class="container">
@@ -58,4 +64,5 @@
         </div>
     </footer>
 </body>
+
 </html>
