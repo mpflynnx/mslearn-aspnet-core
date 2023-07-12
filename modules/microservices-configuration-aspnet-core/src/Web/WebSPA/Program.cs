@@ -18,7 +18,30 @@ namespace eShopOnContainers.WebSPA
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                // Add the AddAzureAppConfiguration code
+                .ConfigureAppConfiguration((_, configBuilder) =>
+                {
+                    var settings = configBuilder.Build();
+
+                    if (settings.GetValue<bool>("UseFeatureManagement") &&
+                        !string.IsNullOrEmpty(settings["AppConfig:Endpoint"]))
+                    {
+                        configBuilder.AddAzureAppConfiguration(options =>
+                        {
+                            var cacheTime = TimeSpan.FromSeconds(5);
+
+                            options.Connect(settings["AppConfig:Endpoint"])
+                                .UseFeatureFlags(flagOptions =>
+                                {
+                                    flagOptions.CacheExpirationInterval = cacheTime;
+                                })
+                                .ConfigureRefresh(refreshOptions =>
+                                {
+                                    refreshOptions.Register("FeatureManagement:Coupons", refreshAll: true)
+                                                .SetCacheExpiration(cacheTime);
+                                });
+                        });
+                    }
+                })
                 .ConfigureLogging((hostingContext, logBuilder) =>
                 {
                     logBuilder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
