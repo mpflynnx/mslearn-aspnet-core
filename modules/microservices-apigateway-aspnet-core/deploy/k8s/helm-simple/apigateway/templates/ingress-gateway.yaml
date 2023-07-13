@@ -3,11 +3,8 @@ kind: Ingress
 metadata:
   name: ingress-gw-c
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /catalog-api/$2
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/backend-path-prefix: /catalog-api/
   labels:
     app: eshop
 spec:
@@ -19,24 +16,21 @@ spec:
   - http:
 {{- end }}
       paths:
-      - backend:
-          service:
-            name: catalog-api
-            port: 
-              number: 80
-        path: /apigateway/c(/|$)(.*)
+      - path: /apigateway/c/*
         pathType: ImplementationSpecific
+        backend:
+          service: 
+            name: catalog-api
+            port:
+              number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-gw-b
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /basket-api/$2
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/backend-path-prefix: /basket-api/
   labels:
     app: eshop
 spec:
@@ -48,24 +42,21 @@ spec:
   - http:
 {{- end }}
       paths:
-      - backend:
-          service:
-            name: basket-api
-            port: 
-              number: 80
-        path: /apigateway/b(/|$)(.*)
+      - path: /apigateway/b/*
         pathType: ImplementationSpecific
+        backend:
+          service: 
+            name: basket-api
+            port:
+              number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-gw-o
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /ordering-api/$2
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/backend-path-prefix: /ordering-api/
   labels:
     app: eshop
 spec:
@@ -77,24 +68,21 @@ spec:
   - http:
 {{- end }}
       paths:
-      - backend:
-          service:
-            name: ordering-api
-            port: 
-              number: 80
-        path: /apigateway/o(/|$)(.*)
+      - path: /apigateway/o/*
         pathType: ImplementationSpecific
+        backend:
+          service: 
+            name: ordering-api
+            port:
+              number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-gw-cp
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /webshoppingagg/$2
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/backend-path-prefix: /webshoppingagg/
   labels:
     app: eshop
 spec:
@@ -106,25 +94,47 @@ spec:
   - http:
 {{- end }}
       paths:
-      - backend:
-          service:
-            name: webshoppingagg
-            port: 
-              number: 80
-        path: /apigateway/cp(/|$)(.*)
+      - path: /apigateway/cp/*
         pathType: ImplementationSpecific
+        backend:
+          service: 
+            name: webshoppingagg
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-gw-cp
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/backend-path-prefix: /websalesagg/
+  labels:
+    app: eshop
+spec:
+  rules:
+{{- if .Values.useHostName }}
+  - host: {{ .Values.host }}
+    http:
+{{- else }}
+  - http:
+{{- end }}
+      paths:
+      - path: /apigateway/cp/*
+        pathType: ImplementationSpecific
+        backend:
+          service: 
+            name: websalesagg
+            port:
+              number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-gw-signalr
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /hub/notificationhub/$2
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.org/websocket-services: "ordering-signalrhub"
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/backend-path-prefix: /hub/notificationhub
   labels:
     app: eshop
 spec:
@@ -136,10 +146,10 @@ spec:
   - http:
 {{- end }}
       paths:
-      - backend:
-          service:
-            name: ordering-signalrhub
-            port: 
-              number: 80
-        path: /apigateway/hub/notificationhub(/|$)(.*)
+      - path: /apigateway/hub/notificationhub*
         pathType: ImplementationSpecific
+        backend:
+          service: 
+            name: ordering-signalrhub
+            port:
+              number: 80

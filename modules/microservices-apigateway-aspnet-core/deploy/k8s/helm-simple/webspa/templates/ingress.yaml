@@ -6,7 +6,7 @@ metadata:
     app: eshop
     service: webspa
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: azure/application-gateway
 spec:
 {{- if eq .Values.protocol "https" }}
   tls:
@@ -22,10 +22,10 @@ spec:
   - http:
 {{- end }}
       paths:
-      - path: /
+      - path: /*
         pathType: ImplementationSpecific
         backend:
-          service:
+          service: 
             name: webspa
-            port: 
+            port:
               number: 80

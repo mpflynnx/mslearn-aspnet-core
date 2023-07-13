@@ -6,7 +6,7 @@ metadata:
     app: eshop
     service: coupon
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: azure/application-gateway
 spec:
   rules:
 {{- if .Values.useHostName }}
@@ -16,10 +16,10 @@ spec:
   - http:
 {{- end }}
       paths:
-      - path: /coupon-api
+      - path: /coupon-api/*
         pathType: ImplementationSpecific
         backend:
-          service:
+          service: 
             name: coupon-api
-            port: 
+            port:
               number: 80

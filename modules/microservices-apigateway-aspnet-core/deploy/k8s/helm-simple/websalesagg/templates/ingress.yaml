@@ -1,10 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: basket
+  name: websalesagg
   labels:
     app: eshop
-    service: basket
+    service: websalesagg
   annotations:
     kubernetes.io/ingress.class: azure/application-gateway
 spec:
@@ -16,10 +16,10 @@ spec:
   - http:
 {{- end }}
       paths:
-      - path: /basket-api/*
+      - path: /websalesagg/*
         pathType: ImplementationSpecific
         backend:
           service: 
-            name: basket-api
+            name: websalesagg
             port:
               number: 80
