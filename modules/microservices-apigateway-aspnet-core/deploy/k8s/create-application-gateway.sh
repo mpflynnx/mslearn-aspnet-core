@@ -73,7 +73,7 @@ az network application-gateway create \
     --vnet-name $ESHOP_APPVNET \
     --subnet $appgwSubNet \
     --capacity 1 \
-    --sku WAF_v2 \
+    --sku Standard_v2 \
     --http-settings-cookie-based-affinity Disabled \
     --frontend-port 80 \
     --http-settings-port 80 \
