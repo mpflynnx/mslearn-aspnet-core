@@ -29,7 +29,33 @@ namespace Microsoft.eShopOnContainers.Web.Sales.HttpAggregator.Controllers
             _logger = logger;
         }
 
-        // Add the GetSalesOfTodayByBrand code
+        [HttpGet]
+        [ProducesResponseType(typeof(SalesDto), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<List<SalesDto>>> GetSalesOfTodayByBrand()
+        {
+            _logger.LogInformation("----- SalesController --> GetTotalSalesAsync()");
+
+            try
+            {
+                // All catalog items
+                var catalogItems = await _catalog.GetCatalogItemAsync();
+
+                // All catalog brands
+                var catalogBrands = await _catalog.GetCatalogBrandAsync();
+
+                // All orders
+                var orderItems = await _ordering.GetOrdersAsync();
+
+                // Fetch processed sales data
+                var salesData = await this.GetSalesData(catalogItems, catalogBrands, orderItems);
+
+                return salesData;
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         // Add the GetSalesData code
     }
