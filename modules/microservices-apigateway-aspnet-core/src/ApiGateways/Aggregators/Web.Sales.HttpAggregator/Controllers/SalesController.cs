@@ -57,6 +57,55 @@ namespace Microsoft.eShopOnContainers.Web.Sales.HttpAggregator.Controllers
             }
         }
 
-        // Add the GetSalesData code
+        private async Task<List<SalesDto>> GetSalesData(List<CatalogItem> catalogItems, List<CatalogBrand> catalogBrands, List<Order> listOfOrders)
+        {
+            _logger.LogInformation("----- Processing sales data <-- GetSalesData() ");
+
+            var salesDataItem = new List<SalesData>();
+
+            // Filter all the orders based on the present day and which are processed
+            var allOrdersOfPresentDay = listOfOrders.Where(o => o.date.Day == DateTime.Today.Day && o.status == "Paid");
+
+            _logger.LogInformation($"----- allOrdersOfPresentDay : {JsonConvert.SerializeObject(allOrdersOfPresentDay)}");
+
+            foreach (var eachOrder in allOrdersOfPresentDay)
+            {
+                // Fetch each order details based on order number
+                var specificOrderItem = await _ordering.GetOrderDetailsAsync(eachOrder.ordernumber);
+
+                if (specificOrderItem != null &&
+                    specificOrderItem.OrderItems != null && specificOrderItem.OrderItems.Count() > 0)
+                {
+                    // Calculate each product unit of sale
+                    foreach (var eachProduct in specificOrderItem.OrderItems)
+                    {
+                        // Filter catalog item
+                        var catalogItemObj = catalogItems.Find(catalogItem => catalogItem.name == eachProduct.ProductName);
+
+                        // Populate sales data
+                        salesDataItem.Add(new SalesData()
+                        {
+                            CatalogBrandId = catalogItemObj.catalogBrandId,
+                            CatalogBrandName = catalogBrands.Find(catalogBrand => catalogBrand.Id == catalogItemObj.catalogBrandId).Brand, // Fetch the brand name based on its ID
+                            TotalUnitOfSoldItems = eachProduct.Units
+                        });
+                    }
+                }
+
+            }
+
+            // Aggregate the unit of sales based on the brand name
+            var groupedSalesData = salesDataItem.GroupBy(catalogBrand => catalogBrand.CatalogBrandName)
+                                                .Select(
+                                                    catalogBrand => new SalesDto()
+                                                    {
+                                                        BrandName = catalogBrand.Key,
+                                                        TotalSales = catalogBrand.Sum(unit => unit.TotalUnitOfSoldItems),
+                                                    }).ToList();
+
+            _logger.LogInformation($"----- groupedSalesData : {JsonConvert.SerializeObject(groupedSalesData)}");
+
+            return groupedSalesData;
+        }
     }
 }
