@@ -14,4 +14,4 @@ data:
   IsClusterEnv: "True"
   OrchestratorType: K8S
   PATH_BASE: /ordering-signalrhub
-  SignalrStoreConnectionString: basketdata
+  SignalrStoreConnectionString: eshop-redis-20230713072122304.redis.cache.windows.net:6380,password=Nyb9mMqIuGKSAEsXAfFquAaCeQlXtbDRHAzCaOCyWZw=,ssl=True,abortConnect=False
